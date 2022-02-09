@@ -1,5 +1,5 @@
-#ifndef __SERVEUR_H__
-#define __SERVEUR_H__
+#ifndef __MTAEXT_H__
+#define __MTAEXT_H__
 
 
 /******************************************************************/
@@ -8,20 +8,10 @@
 /******************************************************************/
 
 /**** Constantes ****/
-#define MAX_LIGNE 1000
-#define MAX_CONNEXIONS 1
-#define MAX_COMMAND 100
+
+void _gestionSMTP(int *d);
 
 
-/**** Fonctions ****/
-struct S
-{
-	int *arg;
-	void (*f)(void *);
-};
-
-void _gestionClient(int *d)
-void gestionClient(void *s)
 
 
-#endif // !__SERVEUR_H__
+#endif // !__MTAEXT_H__

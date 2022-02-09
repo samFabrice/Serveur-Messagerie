@@ -7,10 +7,10 @@
 /******************************************************************/
 
 /**** Constantes ****/
-#define MAX_TAMPON 12000
-/**** Fonctions ****/
 
-int connexionServeur(char *hote,char *service);
+#define MAX_TAMPON 12000
+
+/**** Fonctions ****/
 
 
 #endif // !__MTAINT_H__
