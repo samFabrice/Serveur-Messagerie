@@ -21,7 +21,6 @@ struct Courriel
     char *data;
 };
 
-void _gestionSMTP(int *d);
 void gestionSMTP(void *s);
 
 #endif // !__LIBSMTP_H
