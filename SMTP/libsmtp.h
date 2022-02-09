@@ -19,8 +19,18 @@ struct Courriel
 	char adress_from[TAILLE];
 	char adress_to[TAILLE];
     char *data;
+	char id[TAILLE];
 };
 
 void gestionSMTP(void *s);
+void command_QUIT(char * command, struct Courriel  * courriel, FILE * fd);
+void command_HELO(char * command, struct Courriel * courriel, FILE * fd);
+//void command_MAIL(char * command, Courriel * courriel, File * fd);
+//void command_RCPTT(char * command, Courriel * courriel, File * fd);
+//void command_DATA(char * command, Courriel * courriel, File * fd);
+
+
+
+
 
 #endif // !__LIBSMTP_H
