@@ -28,16 +28,19 @@ void gestionSMTP(void *s){
 		{
 			command_HELO(buffer, &courriel, dialogue);
 		}
-
 		else if(strcmp(command, "QUIT")==0)
 		{
 			command_QUIT(dialogue);
 		}
-		else if(strcmp(command,"MAIL FROM:") == 0)
+		else if(strcmp(command,"MAIL") == 0)
 		{
-			command_MAIL_FROM(buffer, &courriel, dialogue);
+			char dummy[100];
+			char arg[100];
+            sscanf(ligne,"%s %5s %s",dummy, arg, buffer);
+			if (strcmp(arg,"FROM:") == 0)
+				command_MAIL_FROM(buffer, &courriel, dialogue);
 		}
-		else if(strcmp(command,"RCPT TO:") == 0)
+		else if(strcmp(command,"RCPT") == 0)
 		{
 			command_RCPT_TO(buffer, &courriel, dialogue);
 		}
@@ -47,6 +50,7 @@ void gestionSMTP(void *s){
 		}
 		else
 		{
+
 			fprintf(dialogue, "501 Error synaxte\r\n");
 		}
 		
@@ -71,7 +75,7 @@ void command_QUIT( FILE * fd)
 
 void command_MAIL_FROM(char * buffer, struct Courriel *courriel, FILE * fd)
 {
-	fprintf(fd,"250  OK\r\n");
+	fprintf(fd,"250  OK , %s\r\n", buffer);
 	strcpy(courriel->adress_from ,buffer);
 }
 
