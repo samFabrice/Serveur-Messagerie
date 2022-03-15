@@ -23,7 +23,7 @@ void gestionSMTP(void *s){
 	{
 
 		//fprintf(dialogue, "> %s",ligne);
-		sscanf(ligne,"%4s %s",command, buffer);
+		sscanf(ligne,"%4s %[^\n]",command, buffer);
 		if(strcmp(command,"HELO")==0)
 		{
 			command_HELO(buffer, &courriel, dialogue);
@@ -42,11 +42,15 @@ void gestionSMTP(void *s){
 		}
 		else if(strcmp(command,"RCPT") == 0)
 		{
-			command_RCPT_TO(buffer, &courriel, dialogue);
+			char dummy[100];
+			char arg[100];
+            sscanf(ligne,"%s %5s %s",dummy, arg, buffer);
+			if (strcmp(arg,"TO:") == 0)
+				command_RCPT_TO(buffer, &courriel, dialogue);
 		}
 		else if(strcmp(command, "DATA")==0)
 		{
-
+			command_DATA(buffer, &courriel, dialogue);
 		}
 		else
 		{
@@ -63,8 +67,9 @@ void gestionSMTP(void *s){
 
 void command_HELO(char * buffer, struct Courriel *courriel, FILE * fd)
 {
-	fprintf(fd,"250 - %s\r\n", buffer);
 	strcpy(courriel->id ,buffer);
+	fprintf(fd,"250 -, %s\r\n", courriel->id);
+
 }
 
 void command_QUIT( FILE * fd)
@@ -75,12 +80,22 @@ void command_QUIT( FILE * fd)
 
 void command_MAIL_FROM(char * buffer, struct Courriel *courriel, FILE * fd)
 {
-	fprintf(fd,"250  OK , %s\r\n", buffer);
 	strcpy(courriel->adress_from ,buffer);
+	fprintf(fd,"250  OK, %s\r\n", courriel->adress_from);
+
 }
 
 void command_RCPT_TO(char * buffer, struct Courriel *courriel, FILE * fd)
 {
-	fprintf(fd,"250  OK\r\n");
 	strcpy(courriel->adress_to ,buffer);
+	fprintf(fd,"250  OK, %s\r\n", courriel->adress_to);
+
+}
+
+void command_DATA(char * buffer, struct Courriel * courriel, FILE * fd)
+{
+	courriel->body = malloc(sizeof(buffer));
+	strcpy(courriel->body, buffer);
+	fprintf(fd,"250  OK, %s\r\n", courriel->body);
+	free(courriel->body);
 }

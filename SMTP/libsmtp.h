@@ -27,9 +27,8 @@ void command_QUIT(FILE * fd);
 void command_HELO(char * command,struct Courriel * , FILE * fd);
 void command_MAIL_FROM(char * command, struct Courriel * , FILE * fd);
 void command_RCPT_TO(char * command, struct Courriel * , FILE * fd);
-//void command_DATA(char * command, Courriel * courriel, File * fd);
+void command_DATA(char * command, struct Courriel * courriel, FILE * fd);
 
-//command[["HELO", command_HELO], ["QUIT", command_QUIT]]
 
 
 
