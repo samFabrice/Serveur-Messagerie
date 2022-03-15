@@ -16,20 +16,20 @@
 
 struct Courriel
 {
-	char adress_from[TAILLE];
-	char adress_to[TAILLE];
-    char *data;
-	char id[TAILLE];
+	char adress_from[TAILLE]; // l'expéditeur
+	char adress_to[TAILLE]; // le destinataire
+    char *body;             // coprs du message   
+	char id[TAILLE]; //Pour la commande Hello
 };
 
 void gestionSMTP(void *s);
-void command_QUIT(char * command, struct Courriel  * courriel, FILE * fd);
-void command_HELO(char * command, struct Courriel * courriel, FILE * fd);
-//void command_MAIL(char * command, Courriel * courriel, File * fd);
-//void command_RCPTT(char * command, Courriel * courriel, File * fd);
+void command_QUIT(FILE * fd);
+void command_HELO(char * command,struct Courriel * , FILE * fd);
+void command_MAIL_FROM(char * command, struct Courriel * , FILE * fd);
+void command_RCPT_TO(char * command, struct Courriel * , FILE * fd);
 //void command_DATA(char * command, Courriel * courriel, File * fd);
 
-
+//command[["HELO", command_HELO], ["QUIT", command_QUIT]]
 
 
 

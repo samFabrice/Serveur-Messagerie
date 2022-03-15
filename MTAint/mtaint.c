@@ -18,7 +18,7 @@ int main(int argc,char *argv[])
 
 	/* Lecture des arguments de la commande */
 	//analyseArguments(argc,argv);
-	char *port = "2000";
+	char *port = "4000";
 	char *machine = "127.0.0.1";
 	/* Connection au serveur */
 	s=connexionServeur(machine,port);

@@ -31,15 +31,15 @@ void gestionSMTP(void *s){
 
 		else if(strcmp(command, "QUIT")==0)
 		{
-			 fprintf(dialogue, "221 Bye\r\n");
+			command_QUIT(dialogue);
 		}
 		else if(strcmp(command,"MAIL FROM:") == 0)
 		{
-
+			command_MAIL_FROM(buffer, &courriel, dialogue);
 		}
 		else if(strcmp(command,"RCPT TO:") == 0)
 		{
-
+			command_RCPT_TO(buffer, &courriel, dialogue);
 		}
 		else if(strcmp(command, "DATA")==0)
 		{
@@ -57,8 +57,26 @@ void gestionSMTP(void *s){
 	fclose(dialogue);
 }
 
-void command_HELO(char * buffer, struct Courriel * courriel, FILE * fd)
+void command_HELO(char * buffer, struct Courriel *courriel, FILE * fd)
 {
 	fprintf(fd,"250 - %s\r\n", buffer);
 	strcpy(courriel->id ,buffer);
+}
+
+void command_QUIT( FILE * fd)
+{
+	fprintf(fd, "221 Bye\r\n");
+
+}
+
+void command_MAIL_FROM(char * buffer, struct Courriel *courriel, FILE * fd)
+{
+	fprintf(fd,"250  OK\r\n");
+	strcpy(courriel->adress_from ,buffer);
+}
+
+void command_RCPT_TO(char * buffer, struct Courriel *courriel, FILE * fd)
+{
+	fprintf(fd,"250  OK\r\n");
+	strcpy(courriel->adress_to ,buffer);
 }
