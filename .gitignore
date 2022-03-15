@@ -1,3 +1,5 @@
+smtp_ext
+smtp_int
 # Prerequisites
 *.d
 
