@@ -1,9 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include "libsmtp.h"
-
+#include <time.h>
 
 void gestionSMTP(void *s){
 
@@ -30,7 +28,8 @@ void gestionSMTP(void *s){
 		}
 		else if(strcmp(command, "QUIT")==0)
 		{
-			command_QUIT(dialogue);
+			command_QUIT(dialogue,&courriel);
+			break;
 		}
 		else if(strcmp(command,"MAIL") == 0)
 		{
@@ -38,7 +37,15 @@ void gestionSMTP(void *s){
 			char arg[100];
             sscanf(ligne,"%s %5s %s",dummy, arg, buffer);
 			if (strcmp(arg,"FROM:") == 0)
+			{
 				command_MAIL_FROM(buffer, &courriel, dialogue);
+
+			}
+			else
+			{
+				fprintf(dialogue, "501 - Error syntaxe\r\n");
+
+			}
 		}
 		else if(strcmp(command,"RCPT") == 0)
 		{
@@ -47,17 +54,23 @@ void gestionSMTP(void *s){
             sscanf(ligne,"%s %5s %s",dummy, arg, buffer);
 			if (strcmp(arg,"TO:") == 0)
 				command_RCPT_TO(buffer, &courriel, dialogue);
+			else
+			{
+				fprintf(dialogue, "501 - Error syntaxe\r\n");
+
+			}
 		}
 		else if(strcmp(command, "DATA")==0)
 		{
-			command_DATA(buffer, &courriel, dialogue);
+			command_DATA(&courriel, dialogue);
+
 		}
 		else
 		{
 
-			fprintf(dialogue, "501 Error synaxte\r\n");
+			fprintf(dialogue, "501 - Error syntaxe\r\n");
 		}
-		
+		memset(command, 0, MAX_COMMAND);
 	}		
 
 	/* Termine la connexion */
@@ -68,13 +81,13 @@ void gestionSMTP(void *s){
 void command_HELO(char * buffer, struct Courriel *courriel, FILE * fd)
 {
 	strcpy(courriel->id ,buffer);
-	fprintf(fd,"250 -, %s\r\n", courriel->id);
+	fprintf(fd,"250 - %s\r\n", courriel->id);
 
 }
 
-void command_QUIT( FILE * fd)
+void command_QUIT( FILE * fd,struct Courriel *courriel)
 {
-	fprintf(fd, "221 Bye\r\n");
+	fprintf(fd, "221 - Bye %s\r\n",courriel->id);
 
 }
 
@@ -92,10 +105,43 @@ void command_RCPT_TO(char * buffer, struct Courriel *courriel, FILE * fd)
 
 }
 
-void command_DATA(char * buffer, struct Courriel * courriel, FILE * fd)
+void command_DATA(struct Courriel * courriel, FILE * fd)
 {
-	courriel->body = malloc(sizeof(buffer));
-	strcpy(courriel->body, buffer);
-	fprintf(fd,"250  OK, %s\r\n", courriel->body);
+	time_t now;
+	time(&now);
+	char ligne[MAX_LIGNE];
+
+	fprintf(fd,"354  END DATA with <CR><LF>.<CR><LF>\r\n");
+	fprintf(fd, " DATE : %s\r\n",ctime(&now));
+	fprintf(fd,"FROM : %s\r\n", courriel->adress_from);
+	fprintf(fd,"TO : %s\r\n", courriel->adress_to);
+
+	fprintf(fd, "Subject : ");
+
+	// On écrit l'objet du mail
+	if (fgets(ligne,MAX_LIGNE,fd) != NULL)
+	{
+		sscanf(ligne,"%s",courriel->subject);
+	}
+	//Lecture du corps du message
+	int size_body;
+	char buffer[MAX_LIGNE];
+	size_body=sizeof(buffer);
+	courriel->body = malloc(size_body);
+
+	while(fgets(ligne,MAX_LIGNE,fd) != NULL)
+	{
+		sscanf(ligne,"%[^\n]",buffer);
+		strcat(buffer, "\r\n");
+		if(strcmp(buffer, ".\r\n") == 0)
+			break;
+		else {
+			size_body += sizeof(buffer);
+			courriel->body = realloc(courriel->body, size_body);
+			strcat(courriel->body, buffer);
+		}
+	}
+
+	fprintf(fd,"\r\n 250  OK, %s\r\n", courriel->body);
 	free(courriel->body);
 }
