@@ -19,7 +19,7 @@ typedef struct Courriel
 {
 	char adress_from[TAILLE]; // l'expéditeur
 	char adress_to[TAILLE]; // le destinataire
-    char *body;             // coprs du message   
+    char *body;             // coprs du message
 	char id[TAILLE]; //Pour la commande Hello
 	char subject[TAILLE];
 }Courriel;

@@ -4,7 +4,7 @@
 
 SOURCES = $(wildcard *.c)
 OBJETS = $(SOURCES:.c=.o)
-BIBLIOTHEQUES = -lthread -lcom -lsmtp -L ../Threads -L ../Communication -L ../SMTP -lpthread
+BIBLIOTHEQUES = -lthread -lcom -lsmtp -L ../Threads -L ../Communication -L ../SMTP -lpthread -lresolv
 CFLAGS += -std=c99 -I ../Threads -I ../Communication -I ../SMTP
 CIBLE = smtp_ext
 

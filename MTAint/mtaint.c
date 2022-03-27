@@ -7,9 +7,12 @@
 #include <netinet/tcp.h>
 #include <unistd.h>
 #include <poll.h>
+
 #include "mtaint.h"
 #include <libsmtp.h>
 #include <libcom.h>
+#include <resolv.h>
+#include <arpa/inet.h>
 
 
 int main(int argc,char *argv[])
@@ -46,6 +49,7 @@ int main(int argc,char *argv[])
     		}
   	}
 
+	//resolution_DNS(machine);
 	/* On termine la connexion */
 	shutdown(s,SHUT_RDWR);
 
