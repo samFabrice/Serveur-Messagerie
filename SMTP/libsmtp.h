@@ -15,20 +15,21 @@
 
 /**** Fonctions ****/
 
-struct Courriel
+typedef struct Courriel
 {
 	char adress_from[TAILLE]; // l'expéditeur
 	char adress_to[TAILLE]; // le destinataire
     char *body;             // coprs du message   
 	char id[TAILLE]; //Pour la commande Hello
 	char subject[TAILLE];
-};
+}Courriel;
+
 
 void gestionSMTP(void *s);
-void command_QUIT(FILE * fd,struct Courriel * );
-void command_HELO(char * command,struct Courriel * , FILE * fd);
-void command_MAIL_FROM(char * command, struct Courriel * , FILE * fd);
-void command_RCPT_TO(char * command, struct Courriel * , FILE * fd);
+void command_QUIT(FILE * fd,  Courriel * );
+void command_HELO(char * command, Courriel * , FILE * fd);
+void command_MAIL_FROM(char * command,  Courriel * , FILE * fd);
+void command_RCPT_TO(char * command,  Courriel * , FILE * fd);
 void command_DATA(struct Courriel * courriel, FILE * fd);
 
 

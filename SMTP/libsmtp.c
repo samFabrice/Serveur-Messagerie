@@ -71,41 +71,41 @@ void gestionSMTP(void *s){
 			fprintf(dialogue, "501 - Error syntaxe\r\n");
 		}
 		memset(command, 0, MAX_COMMAND);
-	}		
+	}
 
 	/* Termine la connexion */
 
 	fclose(dialogue);
 }
 
-void command_HELO(char * buffer, struct Courriel *courriel, FILE * fd)
+void command_HELO(char * buffer, Courriel *courriel, FILE * fd)
 {
 	strcpy(courriel->id ,buffer);
 	fprintf(fd,"250 - %s\r\n", courriel->id);
 
 }
 
-void command_QUIT( FILE * fd,struct Courriel *courriel)
+void command_QUIT( FILE * fd, Courriel *courriel)
 {
 	fprintf(fd, "221 - Bye %s\r\n",courriel->id);
 
 }
 
-void command_MAIL_FROM(char * buffer, struct Courriel *courriel, FILE * fd)
+void command_MAIL_FROM(char * buffer, Courriel *courriel, FILE * fd)
 {
 	strcpy(courriel->adress_from ,buffer);
 	fprintf(fd,"250  OK, %s\r\n", courriel->adress_from);
 
 }
 
-void command_RCPT_TO(char * buffer, struct Courriel *courriel, FILE * fd)
+void command_RCPT_TO(char * buffer, Courriel *courriel, FILE * fd)
 {
 	strcpy(courriel->adress_to ,buffer);
 	fprintf(fd,"250  OK, %s\r\n", courriel->adress_to);
 
 }
 
-void command_DATA(struct Courriel * courriel, FILE * fd)
+void command_DATA( Courriel * courriel, FILE * fd)
 {
 	time_t now;
 	time(&now);
