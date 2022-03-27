@@ -6,11 +6,13 @@
 
 /**** Fichiers d'inclusion ****/
 
+#include <bits/types/res_state.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stddef.h>
 #include <fcntl.h>
+
 #include <errno.h>
 #include <netdb.h>
 #include <string.h>
@@ -23,6 +25,7 @@
 #include <arpa/inet.h>
 #include <fcntl.h>
 
+#include <resolv.h>
 #include "libcom.h"
 
 /**** Constantes ****/
@@ -30,6 +33,7 @@
 /**** Variables globales *****/
 
 /**** Fonctions de gestion des sockets ****/
+
 int initialisationServeur(char *service,int connexions){
 	struct addrinfo precisions,*resultat,*origine;
 	int statut;
@@ -41,7 +45,7 @@ int initialisationServeur(char *service,int connexions){
 	precisions.ai_socktype=SOCK_STREAM;
 	precisions.ai_flags=AI_PASSIVE;
 	statut=getaddrinfo(NULL,service,&precisions,&origine);
-	
+
 	if(statut<0){ perror("initialisationServeur.getaddrinfo"); exit(EXIT_FAILURE); }
 	struct addrinfo *p;
 	for(p=origine,resultat=origine;p!=NULL;p=p->ai_next)
@@ -57,7 +61,7 @@ int initialisationServeur(char *service,int connexions){
   		perror("initialisationServeur.setsockopt (REUSEADDR)");
  		 exit(EXIT_FAILURE);
  	 }
-	
+
 	if(setsockopt(s,IPPROTO_TCP,TCP_NODELAY,&vrai,sizeof(vrai))<0){
   		perror("initialisationServeur.setsockopt (NODELAY)");
   		exit(EXIT_FAILURE);
@@ -90,8 +94,8 @@ int boucleServeur(int ecoute,void (*traitement)(int *))
 			{
 				perror("Failed to accept client socket");
 				exit(EXIT_FAILURE);
-			} 
-    		/* Passage de la socket de dialogue a la fonction de traitement */			 
+			}
+    		/* Passage de la socket de dialogue a la fonction de traitement */ 
 			char ligne[MAX_LIGNE];
 			traitement(&dialogue) ;
 
@@ -100,11 +104,11 @@ int boucleServeur(int ecoute,void (*traitement)(int *))
 				perror("Failed to receive message");
 				exit(EXIT_FAILURE);
 			}
-			
-		
+
+
     	}
-	
-	
+
+
 }
 
 
@@ -134,4 +138,36 @@ int connexionServeur(char *hote,char *service){
 	freeaddrinfo(origine);
 
 	return s;
+}
+
+void  resolution_DNS(char *hote)
+{
+	char ip[16];
+	memset(ip, '\0', sizeof(ip));
+	struct __res_state res;
+
+	res_ninit(&res);
+	struct in_addr addr;
+
+	inet_aton(hote, &addr);
+	res.nsaddr_list[0].sin_addr = addr;
+	res.nsaddr_list[0].sin_family = AF_INET;
+	res.nsaddr_list[0].sin_port = htons(NS_DEFAULTPORT);
+	res.nscount = 1;
+
+	u_char answer[NS_PACKETSZ];
+	int len = res_nquery(&res, "www.messanger.com", ns_c_in, ns_t_a, answer, sizeof(answer));
+	ns_msg handle ;
+	ns_initparse(answer, len, &handle);
+
+
+	if(ns_msg_count(handle, ns_s_an) > 0)
+	{
+		ns_rr rr;
+		if(ns_parserr(&handle, ns_s_an, 0, &rr) == 0)
+		{
+			strcpy(ip, inet_ntoa(*(struct in_addr *)ns_rr_rdata(rr)));
+		}
+	}
+	printf("resulting ip : %s\n", ip);
 }

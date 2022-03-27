@@ -16,6 +16,7 @@
 int boucleServeur(int ecoute,void (*traitement)(int *));
 int initialisationServeur(char *service,int connexions);
 int connexionServeur(char *hote,char *service);
+void resolution_DNS(char * hote);
 
 
 
