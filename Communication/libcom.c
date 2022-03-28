@@ -142,32 +142,41 @@ int connexionServeur(char *hote,char *service){
 
 void  resolution_DNS(char *hote)
 {
-	char ip[16];
-	memset(ip, '\0', sizeof(ip));
 	struct __res_state res;
-
 	res_ninit(&res);
-	struct in_addr addr;
-
-	inet_aton(hote, &addr);
-	res.nsaddr_list[0].sin_addr = addr;
-	res.nsaddr_list[0].sin_family = AF_INET;
-	res.nsaddr_list[0].sin_port = htons(NS_DEFAULTPORT);
-	res.nscount = 1;
 
 	u_char answer[NS_PACKETSZ];
-	int len = res_nquery(&res, "www.messanger.com", ns_c_in, ns_t_a, answer, sizeof(answer));
+	int len = res_nquery(&res,"gmail.com", C_IN,T_MX, answer, sizeof(answer));
+	if(len == 0) exit(-1);
+	printf("len = %d", len);
 	ns_msg handle ;
-	ns_initparse(answer, len, &handle);
+	int status = ns_initparse(answer, len, &handle);
+	if(status) exit(-2);
 
+	int count, ret, type; 
+	uint16_t prio;
+	const unsigned char *rdata;
+	char buffer[2000];
+	count = ns_msg_count(handle, ns_s_an);
+	printf("%d\n", count);
+	ns_rr rr;
 
-	if(ns_msg_count(handle, ns_s_an) > 0)
+	for(int i =0; i < count; i++)
 	{
-		ns_rr rr;
-		if(ns_parserr(&handle, ns_s_an, 0, &rr) == 0)
+		ret = ns_parserr(&handle, ns_s_an, i, &rr);
+
+		if(ret) break;
+		type =  ns_rr_type(rr);
+		printf("type = %d\n", type);
+		if(type == ns_t_mx)
 		{
-			strcpy(ip, inet_ntoa(*(struct in_addr *)ns_rr_rdata(rr)));
+
+			rdata = ns_rr_rdata(rr);
+			NS_GET16(prio, rdata);
+			dn_expand(ns_msg_base(handle), ns_msg_end(handle), rdata, buffer, sizeof(buffer) );
+			printf("%d %s\n", prio, buffer);
 		}
+
+
 	}
-	printf("resulting ip : %s\n", ip);
 }

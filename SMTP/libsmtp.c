@@ -13,20 +13,24 @@ void gestionSMTP(void *s){
 	/* Echo */
 	char ligne[MAX_LIGNE];
 	char command[MAX_COMMAND];
-	char buffer[100];
-	struct Courriel courriel;
+	Courriel courriel;
 	fprintf(dialogue,"220 Bienvenue SMTP\r\n");
+	memset(courriel.adress_to, '\0', sizeof(courriel.adress_to));
+	memset(courriel.adress_from, '\0', sizeof(courriel.adress_from));
+	memset(courriel.id, '\0', sizeof(courriel.id));
+	memset(courriel.subject, '\0', sizeof(courriel.subject));
+
+
 
 	while(fgets(ligne,MAX_LIGNE,dialogue)!=NULL)
 	{
 
-		//fprintf(dialogue, "> %s",ligne);
-		sscanf(ligne,"%4s %[^\n]",command, buffer);
+		sscanf(ligne,"%4s",command);
 		if(strcmp(command,"HELO")==0)
 		{
-			command_HELO(buffer, &courriel, dialogue);
+			command_HELO(ligne, &courriel, dialogue);
 		}
-		else if(strcmp(command, "QUIT")==0)
+		else if(strcmp(command,"QUIT")==0)
 		{
 			command_QUIT(dialogue,&courriel);
 			break;
@@ -35,12 +39,17 @@ void gestionSMTP(void *s){
 		{
 			char dummy[100];
 			char arg[100];
-            sscanf(ligne,"%s %5s %s",dummy, arg, buffer);
-			if (strcmp(arg,"FROM:") == 0)
+			int ret;
+            ret = sscanf(ligne,"%s %5s",dummy, arg);
+			if(ret == 2)
 			{
-				command_MAIL_FROM(buffer, &courriel, dialogue);
+				if (strcmp(arg,"FROM:") == 0)
+					command_MAIL_FROM(ligne, &courriel, dialogue);
+				else
+					fprintf(dialogue, "501 - Error syntaxe\r\n");
 
 			}
+
 			else
 			{
 				fprintf(dialogue, "501 - Error syntaxe\r\n");
@@ -51,9 +60,19 @@ void gestionSMTP(void *s){
 		{
 			char dummy[100];
 			char arg[100];
-            sscanf(ligne,"%s %5s %s",dummy, arg, buffer);
-			if (strcmp(arg,"TO:") == 0)
-				command_RCPT_TO(buffer, &courriel, dialogue);
+			int ret;
+            ret = sscanf(ligne,"%s %3s",dummy, arg);
+			if(ret == 2)
+			{
+				if (strcmp(arg,"TO:") == 0)
+				{
+					command_RCPT_TO(ligne, &courriel, dialogue);
+				}
+				else
+				{
+					fprintf(dialogue, "501 - Error syntaxe\r\n");
+				}
+			}
 			else
 			{
 				fprintf(dialogue, "501 - Error syntaxe\r\n");
@@ -70,7 +89,6 @@ void gestionSMTP(void *s){
 
 			fprintf(dialogue, "501 - Error syntaxe\r\n");
 		}
-		memset(command, 0, MAX_COMMAND);
 	}
 
 	/* Termine la connexion */
@@ -78,10 +96,24 @@ void gestionSMTP(void *s){
 	fclose(dialogue);
 }
 
-void command_HELO(char * buffer, Courriel *courriel, FILE * fd)
+void command_HELO(char * ligne, Courriel *courriel, FILE * fd)
 {
-	strcpy(courriel->id ,buffer);
-	fprintf(fd,"250 - %s\r\n", courriel->id);
+	char buffer1[MAX_LIGNE];
+	char buffer2[MAX_LIGNE];
+	char buffer3[MAX_LIGNE];
+	memset(buffer1, '\0',MAX_LIGNE);
+	memset(buffer2, '\0',MAX_LIGNE);
+	memset(buffer3, '\0',MAX_LIGNE);
+	int ret;
+	ret = sscanf(ligne, "%s %s %s", buffer1, buffer2, buffer3);
+	if(ret ==2)
+	{
+		strcpy(courriel->id ,buffer2);
+		fprintf(fd,"250 - %s\r\n", courriel->id);
+	}
+	else
+		fprintf(fd,"501 - %s\r\n", courriel->id);
+
 
 }
 
@@ -91,17 +123,43 @@ void command_QUIT( FILE * fd, Courriel *courriel)
 
 }
 
-void command_MAIL_FROM(char * buffer, Courriel *courriel, FILE * fd)
+void command_MAIL_FROM(char * ligne, Courriel *courriel, FILE * fd)
 {
-	strcpy(courriel->adress_from ,buffer);
-	fprintf(fd,"250  OK, %s\r\n", courriel->adress_from);
+	char buffer1[MAX_LIGNE];
+	char buffer2[MAX_LIGNE];
+	char buffer3[MAX_LIGNE];
+	memset(buffer1, '\0',MAX_LIGNE);
+	memset(buffer2, '\0',MAX_LIGNE);
+	memset(buffer3, '\0',MAX_LIGNE);
+	int ret;
+	ret = sscanf(ligne, "%s %s %s", buffer1, buffer2, buffer3);
+	if(ret ==3)
+	{
+		strcpy(courriel->adress_from ,buffer3);
+		fprintf(fd,"250 - %s\r\n",courriel->adress_from);
+	}
+	else
+		fprintf(fd,"501  - Erreur nombre d'argument\r\n");
 
 }
 
-void command_RCPT_TO(char * buffer, Courriel *courriel, FILE * fd)
+void command_RCPT_TO(char * ligne, Courriel *courriel, FILE * fd)
 {
-	strcpy(courriel->adress_to ,buffer);
-	fprintf(fd,"250  OK, %s\r\n", courriel->adress_to);
+	char buffer1[MAX_LIGNE];
+	char buffer2[MAX_LIGNE];
+	char buffer3[MAX_LIGNE];
+	memset(buffer1, '\0',MAX_LIGNE);
+	memset(buffer2, '\0',MAX_LIGNE);
+	memset(buffer3, '\0',MAX_LIGNE);
+	int ret;
+	ret = sscanf(ligne, "%s %s %s", buffer1, buffer2, buffer3);
+	if(ret ==3)
+	{
+		strcpy(courriel->adress_to ,buffer3);
+		fprintf(fd,"250 - %s\r\n",courriel->adress_to);
+	}
+	else
+		fprintf(fd,"501  - Erreur nombre d'argument\r\n");
 
 }
 
@@ -128,7 +186,8 @@ void command_DATA( Courriel * courriel, FILE * fd)
 	char buffer[MAX_LIGNE];
 	size_body=sizeof(buffer);
 	courriel->body = malloc(size_body);
-
+	memset(courriel->body, '\0', size_body);
+	memset(buffer, '\0', sizeof(buffer));
 	while(fgets(ligne,MAX_LIGNE,fd) != NULL)
 	{
 		sscanf(ligne,"%[^\n]",buffer);
