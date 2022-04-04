@@ -24,8 +24,7 @@ typedef struct Courriel
 	char subject[TAILLE];
 }Courriel;
 
-
-void gestionSMTP(void *s);
+void gestionSMTP(void *s, void (*dns)(Courriel *courriel));
 void command_QUIT(FILE * fd,  Courriel * );
 void command_HELO(char * command, Courriel * , FILE * fd);
 void command_MAIL_FROM(char * command,  Courriel * , FILE * fd);

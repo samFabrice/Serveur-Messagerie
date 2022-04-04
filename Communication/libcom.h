@@ -11,13 +11,21 @@
 /**** Constantes ****/
 #define MAX_LIGNE 1000
 #define MAX_TAMPON 12000
+#define MAX_MX 64
+
+typedef struct MX
+{
+	char mx[100];
+	int prio;
+}MX;
 
 /**** Fonctions ****/
+
 int boucleServeur(int ecoute,void (*traitement)(int *));
 int initialisationServeur(char *service,int connexions);
 int connexionServeur(char *hote,char *service);
 void resolution_DNS(char * hote);
-
+int prioComparator ( const void  * first, const void * second );
 
 
 #endif // !__LIBCOM_C__

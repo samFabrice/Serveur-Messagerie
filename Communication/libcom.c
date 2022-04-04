@@ -142,24 +142,25 @@ int connexionServeur(char *hote,char *service){
 
 void  resolution_DNS(char *hote)
 {
-	struct __res_state res;
+		struct __res_state res;
 	res_ninit(&res);
 
 	u_char answer[NS_PACKETSZ];
 	int len = res_nquery(&res,"gmail.com", C_IN,T_MX, answer, sizeof(answer));
 	if(len == 0) exit(-1);
-	printf("len = %d", len);
 	ns_msg handle ;
 	int status = ns_initparse(answer, len, &handle);
 	if(status) exit(-2);
 
-	int count, ret, type; 
+	int count, ret, type;
 	uint16_t prio;
 	const unsigned char *rdata;
 	char buffer[2000];
 	count = ns_msg_count(handle, ns_s_an);
-	printf("%d\n", count);
 	ns_rr rr;
+
+
+	MX mx[MAX_MX];
 
 	for(int i =0; i < count; i++)
 	{
@@ -167,16 +168,34 @@ void  resolution_DNS(char *hote)
 
 		if(ret) break;
 		type =  ns_rr_type(rr);
-		printf("type = %d\n", type);
+
 		if(type == ns_t_mx)
 		{
 
 			rdata = ns_rr_rdata(rr);
 			NS_GET16(prio, rdata);
 			dn_expand(ns_msg_base(handle), ns_msg_end(handle), rdata, buffer, sizeof(buffer) );
-			printf("%d %s\n", prio, buffer);
-		}
+			printf("%d %s %d \n", prio, buffer, i);
+			mx[i].prio = prio;
+			strcpy(mx[i].mx, buffer);
 
+		}
+	}
+	printf("\n print tri \n \n");
+
+	qsort(mx, count, sizeof(MX), prioComparator);
+
+	for(int i = 0; i< count; i++)
+	{
+		printf("%d %s\n", mx[i].prio, mx[i].mx);
 
 	}
+}
+
+int prioComparator ( const void  * first, const void * second ) {
+
+	const MX *firstInt = first;
+	const MX *secondInt =  second;
+
+    return firstInt->prio - secondInt->prio;
 }

@@ -3,7 +3,7 @@
 #include "libsmtp.h"
 #include <time.h>
 
-void gestionSMTP(void *s){
+void gestionSMTP(void *s, void (*dns)(Courriel *courriel)){
 
 	/* Obtient une structure de fichier */
 	int fd = *(int *) s;
@@ -91,9 +91,11 @@ void gestionSMTP(void *s){
 		}
 	}
 
+	dns(&courriel);
 	/* Termine la connexion */
 
 	fclose(dialogue);
+
 }
 
 void command_HELO(char * ligne, Courriel *courriel, FILE * fd)
