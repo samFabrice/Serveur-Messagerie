@@ -3,10 +3,9 @@
 #include "libsmtp.h"
 #include <time.h>
 
-void gestionSMTP(void *s, void (*dns)(Courriel *courriel)){
+void gestionSMTP(int fd, void (*dns)(Courriel *courriel)){
 
 	/* Obtient une structure de fichier */
-	int fd = *(int *) s;
 	FILE *dialogue=fdopen(fd,"a+");
 	if(dialogue==NULL){ perror("gestionSMTP.fdopen"); exit(EXIT_FAILURE); }
 

@@ -9,5 +9,4 @@ struct S
 
 void * _lanceThread(void *arg);
 void lanceThread(void (*fonction)(void *), void *d, int taille);
-
 #endif

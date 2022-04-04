@@ -81,7 +81,7 @@ int initialisationServeur(char *service,int connexions){
 	return s;
 }
 
-int boucleServeur(int ecoute,void (*traitement)(int *))
+int boucleServeur(int ecoute,void (*traitement)(int ))
 {
     int dialogue;
 	struct sockaddr adressClient;
@@ -96,15 +96,7 @@ int boucleServeur(int ecoute,void (*traitement)(int *))
 				exit(EXIT_FAILURE);
 			}
     		/* Passage de la socket de dialogue a la fonction de traitement */ 
-			char ligne[MAX_LIGNE];
-			traitement(&dialogue) ;
-
-			if(recv(dialogue, ligne, sizeof(ligne), 0) == -1)
-			{
-				perror("Failed to receive message");
-				exit(EXIT_FAILURE);
-			}
-
+			traitement(dialogue) ;
 
     	}
 
@@ -142,7 +134,7 @@ int connexionServeur(char *hote,char *service){
 
 void  resolution_DNS(char *hote)
 {
-		struct __res_state res;
+	struct __res_state res;
 	res_ninit(&res);
 
 	u_char answer[NS_PACKETSZ];

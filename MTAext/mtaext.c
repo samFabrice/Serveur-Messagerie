@@ -11,9 +11,18 @@
 #include <libcom.h>
 
 // Initialisation serveur generique :
-void _gestionSMTP(int *d)
+void gestionMAIL(Courriel *courriel)
 {
-	lanceThread(gestionSMTP,d,sizeof(int));
+	// Envoie mail
+}
+void _gestionSMTP(void * arg)
+{
+	int d = *(int *)arg;
+	gestionSMTP(d,gestionMAIL);
+}
+void gestionClient(int d)
+{
+	lanceThread(_gestionSMTP,&d,sizeof(int));
 }
 
 int main(int argc,char *argv[])
@@ -27,5 +36,5 @@ int main(int argc,char *argv[])
 	s=initialisationServeur(service,MAX_CONNEXIONS);
    
 	/* Lancement de la boucle d'ecoute */
-	boucleServeur(s,_gestionSMTP);
+	boucleServeur(s,gestionClient);
 } 
