@@ -3,7 +3,7 @@
 #include "libsmtp.h"
 #include <time.h>
 
-void gestionSMTP(int fd, void (*dns)(Courriel *courriel)){
+void gestionSMTP(int fd, void (*gestionMAIL)(Courriel *courriel)){
 
 	/* Obtient une structure de fichier */
 	FILE *dialogue=fdopen(fd,"a+");
@@ -90,10 +90,10 @@ void gestionSMTP(int fd, void (*dns)(Courriel *courriel)){
 		}
 	}
 
-	dns(&courriel);
+	gestionMAIL(&courriel);
 	/* Termine la connexion */
 
-	fclose(dialogue);
+	//fclose(dialogue);
 
 }
 
@@ -202,6 +202,6 @@ void command_DATA( Courriel * courriel, FILE * fd)
 		}
 	}
 
-	fprintf(fd,"\r\n 250  OK, %s\r\n", courriel->body);
+	fprintf(fd,"\r\n 250  OK\r\n");
 	free(courriel->body);
 }

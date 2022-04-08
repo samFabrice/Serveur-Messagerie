@@ -13,7 +13,11 @@
 // Initialisation serveur generique :
 void gestionMAIL(Courriel *courriel)
 {
-	// Envoie mail
+	printf("MAIL FROM : %s\n", courriel->adress_from);
+	printf("RCPT TO : %s\n", courriel->adress_to);
+	printf("subject : %s\n", courriel->subject);
+	printf("body : %s\n", courriel->body);
+	resolution_DNS(courriel->adress_to);
 }
 void _gestionSMTP(void * arg)
 {
@@ -28,13 +32,13 @@ void gestionClient(int d)
 int main(int argc,char *argv[])
 {
 	int s;
-	
+
 	/* Lecture des arguments de la commande */
 	//analyseArguments(argc,argv);
- 	char *service = "4000"; 
+ 	char *service = "4000";
 	/* Initialisation du serveur */
 	s=initialisationServeur(service,MAX_CONNEXIONS);
-   
+
 	/* Lancement de la boucle d'ecoute */
 	boucleServeur(s,gestionClient);
-} 
+}

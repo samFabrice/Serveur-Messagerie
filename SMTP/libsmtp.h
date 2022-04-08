@@ -20,11 +20,11 @@ typedef struct Courriel
 	char adress_from[TAILLE]; // l'expéditeur
 	char adress_to[TAILLE]; // le destinataire
     char *body;             // coprs du message
-	char id[TAILLE]; //Pour la commande Hello
+	char id[TAILLE]; 		//Pour la commande Hello
 	char subject[TAILLE];
 }Courriel;
 
-void gestionSMTP(void *s, void (*dns)(Courriel *courriel));
+void gestionSMTP(int fd, void (*gestionMAIL)(Courriel *courriel));
 void command_QUIT(FILE * fd,  Courriel * );
 void command_HELO(char * command, Courriel * , FILE * fd);
 void command_MAIL_FROM(char * command,  Courriel * , FILE * fd);

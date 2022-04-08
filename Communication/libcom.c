@@ -138,7 +138,7 @@ void  resolution_DNS(char *hote)
 	res_ninit(&res);
 
 	u_char answer[NS_PACKETSZ];
-	int len = res_nquery(&res,"gmail.com", C_IN,T_MX, answer, sizeof(answer));
+	int len = res_nquery(&res,hote, C_IN,T_MX, answer, sizeof(answer));
 	if(len == 0) exit(-1);
 	ns_msg handle ;
 	int status = ns_initparse(answer, len, &handle);
