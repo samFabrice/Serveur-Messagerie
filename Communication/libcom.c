@@ -139,10 +139,16 @@ void  resolution_DNS(char *hote)
 
 	u_char answer[NS_PACKETSZ];
 	int len = res_nquery(&res,hote, C_IN,T_MX, answer, sizeof(answer));
-	if(len == 0) exit(-1);
+	if(len == 0) {
+		perror("erreur !");
+		exit(-1);
+	}
 	ns_msg handle ;
 	int status = ns_initparse(answer, len, &handle);
-	if(status) exit(-2);
+	if(status) {
+		perror("erreur 2 !");
+		exit(-2);
+	}
 
 	int count, ret, type;
 	uint16_t prio;

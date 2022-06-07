@@ -17,8 +17,10 @@ void gestionMAIL(Courriel *courriel)
 	printf("RCPT TO : %s\n", courriel->adress_to);
 	printf("subject : %s\n", courriel->subject);
 	printf("body : %s\n", courriel->body);
-	resolution_DNS(courriel->adress_to);
+	printf("----------------------");
+	resolution_DNS(courriel->adress_from);
 }
+
 void _gestionSMTP(void * arg)
 {
 	int d = *(int *)arg;

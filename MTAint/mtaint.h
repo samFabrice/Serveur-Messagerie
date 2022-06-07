@@ -12,5 +12,4 @@
 
 /**** Fonctions ****/
 
-
 #endif // !__MTAINT_H__
