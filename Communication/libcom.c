@@ -39,7 +39,7 @@ int initialisationServeur(char *service,int connexions){
 	int statut;
 	int s;
 
-	/* Construction de la structure adresse */
+	/* Construction de la structure adresse */ //0::
 	memset(&precisions,0,sizeof precisions);
 	precisions.ai_family=AF_UNSPEC;
 	precisions.ai_socktype=SOCK_STREAM;
@@ -132,8 +132,11 @@ int connexionServeur(char *hote,char *service){
 	return s;
 }
 
-void  resolution_DNS(char *hote)
+void resolution_DNS(char *hote)
 {
+	strtok(hote, "@");
+	printf(" hote : %s\n", hote);
+	hote = "gmail.com";
 	struct __res_state res;
 	res_ninit(&res);
 
@@ -173,21 +176,22 @@ void  resolution_DNS(char *hote)
 			rdata = ns_rr_rdata(rr);
 			NS_GET16(prio, rdata);
 			dn_expand(ns_msg_base(handle), ns_msg_end(handle), rdata, buffer, sizeof(buffer) );
-			printf("%d %s %d \n", prio, buffer, i);
+			//printf("%d %s %d \n", prio, buffer, i);
 			mx[i].prio = prio;
 			strcpy(mx[i].mx, buffer);
 
 		}
 	}
-	printf("\n print tri \n \n");
+	//printf("\n print tri \n \n");
 
 	qsort(mx, count, sizeof(MX), prioComparator);
 
-	for(int i = 0; i< count; i++)
+	/*for(int i = 0; i< count; i++)
 	{
 		printf("%d %s\n", mx[i].prio, mx[i].mx);
 
-	}
+	}*/
+
 }
 
 int prioComparator ( const void  * first, const void * second ) {

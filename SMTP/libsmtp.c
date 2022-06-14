@@ -93,7 +93,7 @@ void gestionSMTP(int fd, void (*gestionMAIL)(Courriel *courriel)){
 	gestionMAIL(&courriel);
 	/* Termine la connexion */
 
-	//fclose(dialogue);
+	fclose(dialogue);
 
 }
 

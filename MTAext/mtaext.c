@@ -13,19 +13,17 @@
 // Initialisation serveur generique :
 void gestionMAIL(Courriel *courriel)
 {
-	printf("MAIL FROM : %s\n", courriel->adress_from);
-	printf("RCPT TO : %s\n", courriel->adress_to);
-	printf("subject : %s\n", courriel->subject);
-	printf("body : %s\n", courriel->body);
-	printf("----------------------");
+	printf("----------------------\n");
 	resolution_DNS(courriel->adress_from);
+	MX mxresolu;
+	printf("mx resolu = %s | prio = %d\n",mxresolu.mx, mxresolu.prio);
+
 }
 
 void _gestionSMTP(void * arg)
 {
 	int d = *(int *)arg;
 	gestionSMTP(d,gestionMAIL);
-	
 }
 void gestionClient(int d)
 {

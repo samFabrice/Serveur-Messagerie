@@ -23,9 +23,6 @@ const char *maildir = "/Maildir/";
 const char *new = "/new/";
 const char *tmp = "/tmp/";
 
-
-
-
 void maildircheck(int ret){
     errno = 0;
     if (ret == -1) {
@@ -56,8 +53,9 @@ void gestionMAIL(Courriel *courriel)
     char *user = strtok(courriel->adress_to, "@");
     strcat(cwd,user);
     
-    //printf("-------> %s\n", cwd);
+    printf("-------> %s\n", cwd);
     int ret = mkdir(cwd,S_IRWXU);
+    printf("-------> ret = %d\n", ret);
     maildircheck(ret);
 
     strcat(cwd, maildir);
@@ -74,9 +72,23 @@ void gestionMAIL(Courriel *courriel)
 
     strcat(pwd, tmp);
     ret = mkdir(pwd,S_IRWXU);
-    maildircheck(ret);  
+    maildircheck(ret);
 
-    exit(EXIT_SUCCESS);
+    char nomFichier[1024];
+    memset(nomFichier, '\0', 1024);
+    strcpy(nomFichier, pwd);
+    strcat(nomFichier, "test.txt");
+
+    FILE *fichier = NULL;
+    fichier = fopen(nomFichier, "w");
+    if (fichier != NULL)
+    {
+    printf("copie du corps du mail\n");
+    fputs(courriel->body, fichier);
+    fclose(fichier);
+    }
+    else 
+        printf("************\n");
 
 }
 

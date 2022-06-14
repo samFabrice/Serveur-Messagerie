@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "libthread.h"
-
+#include <semaphore.h>
 
 void lanceThread(void (*fonction)(void *), void *d, int taille)
 {
@@ -23,4 +23,21 @@ void * _lanceThread(void *arg)
 	free(s_gc->arg);
 	free(arg);
 	return NULL;
+}
+
+void mutex_init(void)
+{
+	int i ;
+	for( i = 0; i< N; i++ )
+		pthread_mutex_init(&mutex[i], NULL);
+}
+
+void P(int p)
+{
+	pthread_mutex_lock(&mutex[p]);
+}
+
+void v(int p)
+{
+	pthread_mutex_unlock(&mutex[p]);
 }
