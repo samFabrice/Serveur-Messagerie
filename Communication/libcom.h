@@ -24,7 +24,7 @@ typedef struct MX
 int boucleServeur(int ecoute,void (*traitement)(int ));
 int initialisationServeur(char *service,int connexions);
 int connexionServeur(char *hote,char *service);
-void resolution_DNS(char * hote);
+void resolution_DNS(char * hote, MX *mx, int size);
 int prioComparator ( const void  * first, const void * second );
 
 

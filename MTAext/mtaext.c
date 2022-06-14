@@ -14,10 +14,25 @@
 void gestionMAIL(Courriel *courriel)
 {
 	printf("----------------------\n");
-	resolution_DNS(courriel->adress_from);
-	MX mxresolu;
-	printf("mx resolu = %s | prio = %d\n",mxresolu.mx, mxresolu.prio);
 
+	MX *mxresolu = malloc(MAX_MX* sizeof(MX));
+	//MX mxresolu;
+	resolution_DNS(courriel->adress_from, mxresolu, MAX_MX);
+	
+	for(int i = 0; i< sizeof(mxresolu); i++)
+	{
+		printf(" prio = %d | mx resolu =  %s\n", mxresolu[i].prio, mxresolu[i].mx);
+
+	}
+	/* Connection au serveur */
+	int s;
+	for(int i = 0; i < MAX_MX; i++)
+	{
+		s=connexionServeur(mxresolu[0].mx,"25");
+		if(s<0){ fprintf(stderr,"Erreur de connexion au serveur\n"); }
+
+	}
+	
 }
 
 void _gestionSMTP(void * arg)

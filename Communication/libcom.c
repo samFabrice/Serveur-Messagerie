@@ -44,7 +44,7 @@ int initialisationServeur(char *service,int connexions){
 	precisions.ai_family=AF_UNSPEC;
 	precisions.ai_socktype=SOCK_STREAM;
 	precisions.ai_flags=AI_PASSIVE;
-	statut=getaddrinfo(NULL,service,&precisions,&origine);
+	statut=getaddrinfo("0::",service,&precisions,&origine);
 
 	if(statut<0){ perror("initialisationServeur.getaddrinfo"); exit(EXIT_FAILURE); }
 	struct addrinfo *p;
@@ -132,7 +132,7 @@ int connexionServeur(char *hote,char *service){
 	return s;
 }
 
-void resolution_DNS(char *hote)
+void resolution_DNS(char *hote, MX *mx, int size)
 {
 	strtok(hote, "@");
 	printf(" hote : %s\n", hote);
@@ -160,8 +160,6 @@ void resolution_DNS(char *hote)
 	count = ns_msg_count(handle, ns_s_an);
 	ns_rr rr;
 
-
-	MX mx[MAX_MX];
 
 	for(int i =0; i < count; i++)
 	{
@@ -191,7 +189,6 @@ void resolution_DNS(char *hote)
 		printf("%d %s\n", mx[i].prio, mx[i].mx);
 
 	}*/
-
 }
 
 int prioComparator ( const void  * first, const void * second ) {
